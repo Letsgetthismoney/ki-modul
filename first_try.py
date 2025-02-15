@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.linear_model import LinearRegression
@@ -12,7 +13,53 @@ df = pd.read_csv('Housing.csv')
 # Quick check of the DataFrame
 # print(df.head())
 
+# 2. Visualisierung der Preisverteilung (Histogramm + Dichtekurve)
+plt.figure(figsize=(8, 5))
+sns.histplot(df['price'], kde=True, color='blue', bins=30)
+
+# Methode A: Wissenschaftliche Notation ausschalten
+plt.ticklabel_format(style='plain', axis='x')
+
+# ODER Methode B: Eigene Formatierungsfunktion für die x-Achse
+# (Auskommentieren und statt dessen verwenden, wenn du möchtest)
+# formatter = FuncFormatter(lambda x, pos: f'{x:,.0f}')
+# plt.gca().xaxis.set_major_formatter(formatter)
+
+plt.title('Verteilung der Hauspreise')
+plt.xlabel('Preis')
+plt.ylabel('Häufigkeit')
+plt.tight_layout()
+#plt.show()
+
 # 2. Preprocessing
+# Identify numeric columns to add noise (e.g., area, bedrooms, bathrooms, stories, parking, price)
+numeric_cols = ['area', 'bedrooms', 'bathrooms', 'stories', 'parking', 'price']
+
+# Number of times to duplicate
+dup_factor = 5
+
+augmented_rows = []
+for idx, row in df.iterrows():
+    for _ in range(dup_factor):
+        new_row = row.copy()
+        for col in numeric_cols:
+            # For each numeric column, add small Gaussian noise (1% of its value)
+            noise = np.random.normal(0, 0.01 * row[col])
+            new_row[col] = row[col] + noise
+        augmented_rows.append(new_row)
+
+augmented_df = pd.DataFrame(augmented_rows, columns=df.columns)
+
+# Now combine with original data
+df_augmented = pd.concat([df, augmented_df], ignore_index=True)
+#df_augmented = df
+# Make sure to fix integer or categorical columns if they must stay integer (round them, clip them, etc.)
+df_augmented['bedrooms'] = df_augmented['bedrooms'].round().clip(lower=0)
+
+df = df_augmented
+print("Original dataset size:", len(df))
+print("Augmented dataset size:", len(df_augmented))
+
 
 ## 2.1 Convert 'yes'/ 'no' columns to 1/0
 yes_no_cols = ['mainroad', 'guestroom', 'basement',
@@ -21,9 +68,13 @@ yes_no_cols = ['mainroad', 'guestroom', 'basement',
 for col in yes_no_cols:
     df[col] = df[col].map({'yes': 1, 'no': 0})
 
+#df = df.drop('hotwaterheating', axis=1)
+df = df.drop('guestroom', axis=1)
+
 ## 2.2 Handle the 'furnishingstatus' column (with three categories: furnished, semi-furnished, unfurnished)
 # One option: create dummy variables
 furnishing_dummies = pd.get_dummies(df['furnishingstatus'], prefix='furnish')
+print(furnishing_dummies)
 df = pd.concat([df, furnishing_dummies], axis=1)
 
 # Drop the original furnishingstatus column
@@ -49,7 +100,10 @@ mse = mean_squared_error(y_test, y_pred)
 rmse = np.sqrt(mse)
 r2 = r2_score(y_test, y_pred)
 
+
+
 print("Evaluation on Test Set:")
+print(f"  - MSE: {mse:,.2f}")
 print(f"  - RMSE: {rmse:,.2f}")
 print(f"  - R^2:  {r2:.4f}")
 
@@ -66,7 +120,7 @@ new_house = {
     'bathrooms': [2],
     'stories': [3],
     'mainroad': [1],         # 'yes' -> 1
-    'guestroom': [0],        # 'no' -> 0
+    #'guestroom': [0],        # 'no' -> 0
     'basement': [0],         # 'no' -> 0
     'hotwaterheating': [0],  # 'no' -> 0
     'airconditioning': [1],  # 'yes' -> 1

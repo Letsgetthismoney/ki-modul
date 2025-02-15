@@ -44,7 +44,7 @@ augmented_df = pd.DataFrame(augmented_rows, columns=df.columns)
 
 # Now combine with original data
 df_augmented = pd.concat([df, augmented_df], ignore_index=True)
-
+#df_augmented = df
 # Make sure to fix integer or categorical columns if they must stay integer (round them, clip them, etc.)
 df_augmented['bedrooms'] = df_augmented['bedrooms'].round().clip(lower=0)
 
@@ -87,8 +87,9 @@ X_test = scaler.transform(X_test)
 model = Sequential()
 n_features = X_train.shape[1]
 
-model.add(Dense(20, activation='relu', input_shape=(n_features,)))
-model.add(Dense(20, activation='relu'))
+model.add(Dense(32, activation='relu', input_shape=(n_features,)))
+model.add(Dense(16, activation='relu'))
+model.add(Dense(16, activation='relu'))
 model.add(Dense(1))  # Single output
 
 model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
@@ -99,7 +100,7 @@ model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])
 history = model.fit(
     X_train, y_train,
     validation_split=0.1,
-    epochs=500,
+    epochs=1000,
     batch_size=16,
     verbose=1
 )
