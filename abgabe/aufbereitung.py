@@ -25,8 +25,8 @@ def augment_data(df: pd.DataFrame) -> pd.DataFrame:
     Returns a new DataFrame with augmented data.
     """
     df_aug = df.copy()
-    if 'price' in df.columns and 'area' in df.columns:
-        df_aug['price_per_area'] = df_aug['price'] / df_aug['area']
+    #if 'price' in df.columns and 'area' in df.columns:
+    #    df_aug['price_per_area'] = df_aug['price'] / df_aug['area']
     # You can add more transformations as needed
     return df_aug
 
