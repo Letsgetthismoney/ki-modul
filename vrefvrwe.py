@@ -89,7 +89,6 @@ n_features = X_train.shape[1]
 
 model.add(Dense(32, activation='relu', input_shape=(n_features,)))
 model.add(Dense(16, activation='relu'))
-model.add(Dense(16, activation='relu'))
 model.add(Dense(1))  # Single output
 
 model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae'])

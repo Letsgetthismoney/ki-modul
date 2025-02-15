@@ -10,6 +10,9 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
 
+from trainingssplit import unify_splits_to_dataframes
+
+
 def train_linear_regression(train_df: pd.DataFrame, eval_df: pd.DataFrame, target_col: str = 'price'):
     """
     Train a Linear Regression model and evaluate it on the eval set.
@@ -159,3 +162,39 @@ def train_keras_network(
     }
 
     return model, metrics, history
+
+
+def train_linear_regression_splits(splits, target_col: str = 'price'):
+    """
+    Takes the output of *any* split function (holdout, k-fold, etc.)
+    which might be:
+      - (train_df, eval_df)
+      - (X_train, X_test, y_train, y_test)
+      - a list of them
+    and trains/evaluates on each split.
+
+    Returns:
+      - List of (model, metrics) if you want to keep each model
+      - Optionally an "average metrics" across splits
+    """
+    # 1. Unify all splits -> list of (train_df, eval_df)
+    unified_splits = unify_splits_to_dataframes(splits, target_col=target_col)
+
+    results = []
+    for (train_df, eval_df) in unified_splits:
+        model, metrics = train_linear_regression(train_df, eval_df, target_col=target_col)
+        results.append((model, metrics))
+
+    # If there's only one split, just return that result
+    if len(results) == 1:
+        return results[0]  # (model, metrics)
+
+    # Otherwise, compute average metrics across all splits
+    avg_metrics = {}
+    # Collect all metric keys from the first result
+    metric_keys = results[0][1].keys()
+
+    for k in metric_keys:
+        avg_metrics[k] = np.mean([r[1][k] for r in results])
+
+    return results, avg_metrics
