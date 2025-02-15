@@ -61,7 +61,7 @@ def train_neural_network(train_df: pd.DataFrame, eval_df: pd.DataFrame, target_c
     X_eval = eval_df.drop(columns=[target_col])
     y_eval = eval_df[target_col]
 
-    model = MLPRegressor(hidden_layer_sizes=(64, 64), max_iter=10000, random_state=42)
+    model = MLPRegressor(hidden_layer_sizes=(64, 64), max_iter=20000, random_state=42)
     model.fit(X_train, y_train)
 
     y_pred = model.predict(X_eval)

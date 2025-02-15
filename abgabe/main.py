@@ -2,7 +2,6 @@ import sys
 import argparse
 import csv
 from itertools import product
-
 import normalisierung  # your normalization.py
 import aufbereitung    # your aufbereitung.py
 import trainingssplit  # your trainingssplit.py

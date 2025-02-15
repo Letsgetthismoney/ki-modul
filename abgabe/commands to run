@@ -1,9 +1,9 @@
 1) cd abgabe
 2) command auswählen
 
-python main.py \
-  --csv_file_path Housing.csv \
-  --run_all_combinations
+python main.py
+--csv_file_path housing.csv
+--run_all_combinations
 
 python main.py \
   --csv_file_path Housing.csv \
@@ -28,5 +28,13 @@ python main.py \
   --remove_outliers \
   --split_method random \
   --train_model nn
+
+  python main.py \
+    --csv_file_path Housing.csv \
+    --remove_correlation \
+    --augment \
+    --remove_outliers \
+    --split_method holdout \
+    --train_model keras
 
   3) run
