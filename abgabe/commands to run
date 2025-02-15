@@ -1,0 +1,27 @@
+1) cd abgabe
+2) command auswählen
+python main.py \
+  --csv_file_path Housing.csv \
+  --remove_correlation \
+  --augment \
+  --remove_outliers \
+  --split_method random \
+  --train_model linear
+
+python main.py \
+  --csv_file_path Housing.csv \
+  --remove_correlation \
+  --augment \
+  --remove_outliers \
+  --split_method random \
+  --train_model tree
+
+python main.py \
+  --csv_file_path Housing.csv \
+  --remove_correlation \
+  --augment \
+  --remove_outliers \
+  --split_method random \
+  --train_model nn
+
+  3) run
